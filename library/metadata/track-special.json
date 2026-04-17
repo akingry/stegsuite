@@ -1,0 +1,31 @@
+﻿{
+    "id":  "track-special",
+    "title":  "Special",
+    "artist":  "StegSong Demo",
+    "album":  "Imported Gallery",
+    "albumArtist":  "StegSong Demo",
+    "genre":  [
+                  "Demo",
+                  "Electronic"
+              ],
+    "year":  2026,
+    "trackNumber":  5,
+    "durationSeconds":  0,
+    "imageFile":  "library/images/track-special.png",
+    "mp3File":  "library/mp3/track-special.mp3",
+    "stegFile":  "library/stegmp3/special.steg.png",
+    "addedAt":  "2026-04-16T21:04:00Z",
+    "favorite":  false,
+    "tags":  [
+                 "demo",
+                 "gallery"
+             ],
+    "hash":  {
+                 "mp3Sha256":  "",
+                 "stegSha256":  ""
+             },
+    "source":  {
+                   "metadataProvider":  "seeded",
+                   "imageProvider":  "existing-gallery"
+               }
+}

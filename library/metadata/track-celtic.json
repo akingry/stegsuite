@@ -1,0 +1,31 @@
+﻿{
+    "id":  "track-celtic",
+    "title":  "Celtic",
+    "artist":  "StegSong Demo",
+    "album":  "Imported Gallery",
+    "albumArtist":  "StegSong Demo",
+    "genre":  [
+                  "Demo",
+                  "World"
+              ],
+    "year":  2026,
+    "trackNumber":  2,
+    "durationSeconds":  0,
+    "imageFile":  "library/images/track-celtic.png",
+    "mp3File":  "library/mp3/track-celtic.mp3",
+    "stegFile":  "library/stegmp3/celtic.steg.png",
+    "addedAt":  "2026-04-16T21:01:00Z",
+    "favorite":  false,
+    "tags":  [
+                 "demo",
+                 "gallery"
+             ],
+    "hash":  {
+                 "mp3Sha256":  "",
+                 "stegSha256":  ""
+             },
+    "source":  {
+                   "metadataProvider":  "seeded",
+                   "imageProvider":  "existing-gallery"
+               }
+}

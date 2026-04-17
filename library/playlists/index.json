@@ -1,0 +1,14 @@
+[
+  {
+    "id": "playlist-demo-gallery",
+    "name": "Demo Gallery",
+    "trackIds": [
+      "track-57-chevy",
+      "track-celtic",
+      "track-rain-in-canada",
+      "track-she-moves",
+      "track-special",
+      "track-wind-is-in-from-africa"
+    ]
+  }
+]

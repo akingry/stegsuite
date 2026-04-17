@@ -1,0 +1,31 @@
+﻿{
+    "id":  "track-rain-in-canada",
+    "title":  "Rain In Canada",
+    "artist":  "StegSong Demo",
+    "album":  "Imported Gallery",
+    "albumArtist":  "StegSong Demo",
+    "genre":  [
+                  "Demo",
+                  "Ambient"
+              ],
+    "year":  2026,
+    "trackNumber":  3,
+    "durationSeconds":  0,
+    "imageFile":  "library/images/track-rain-in-canada.png",
+    "mp3File":  "library/mp3/track-rain-in-canada.mp3",
+    "stegFile":  "library/stegmp3/rain in canada.steg.png",
+    "addedAt":  "2026-04-16T21:02:00Z",
+    "favorite":  false,
+    "tags":  [
+                 "demo",
+                 "gallery"
+             ],
+    "hash":  {
+                 "mp3Sha256":  "",
+                 "stegSha256":  ""
+             },
+    "source":  {
+                   "metadataProvider":  "seeded",
+                   "imageProvider":  "existing-gallery"
+               }
+}

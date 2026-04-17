@@ -1,0 +1,27 @@
+{
+  "id": "the-beatles-we-can-work-it-out-1776405203773",
+  "title": "We Can Work It Out",
+  "artist": "The Beatles",
+  "album": "Yesterday… and Today",
+  "albumArtist": "The Beatles",
+  "genre": [],
+  "year": 1966,
+  "trackNumber": null,
+  "durationSeconds": 137,
+  "imageFile": "library/images/the-beatles-we-can-work-it-out-1776405203773.png",
+  "mp3File": "library/mp3/the-beatles-we-can-work-it-out-1776405203773.mp3",
+  "stegFile": "library/stegmp3/the-beatles-we-can-work-it-out-1776405203773.steg.png",
+  "addedAt": "2026-04-17T05:53:23.810Z",
+  "favorite": false,
+  "tags": [],
+  "hash": {
+    "mp3Sha256": "fe66285dc82324f6b8d3d5ac3ccc59a45b2dbf8496db820b580d520198520a42",
+    "stegSha256": "db3713eed87fe8729713462d296071095bf16ecae540687cba56be2fc2f74445",
+    "imageSha256": "e39ccb0f884b391b78eb257786a28effbb67c012b537f941cdf0799efce46c1a"
+  },
+  "source": {
+    "metadataProvider": "manual+id3",
+    "imageProvider": "user-upload",
+    "coverImageSource": "Gemini_Generated_Image_cm3lpicm3lpicm3l.png"
+  }
+}

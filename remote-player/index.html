@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>StegSuite Remote Player</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <p class="eyebrow">Streaming player</p>
+      <h1>StegSuite Remote Player</h1>
+      <p id="serverLabel" class="muted"></p>
+    </header>
+
+    <section class="now-playing card">
+      <img id="artwork" alt="Current artwork" class="artwork" />
+      <div class="meta">
+        <div class="eyebrow">Now playing</div>
+        <h2 id="title">Pick a track</h2>
+        <p id="subtitle" class="muted">The player decodes the steg PNG in your browser and streams the recovered MP3 from memory.</p>
+        <div class="actions">
+          <button id="playPauseBtn" disabled>Play</button>
+          <button id="shuffleBtn" class="ghost" type="button" aria-pressed="false">Shuffle Off</button>
+          <a id="downloadBtn" class="ghost disabled" href="#" download>Download steg PNG</a>
+        </div>
+        <label class="seek-row">
+          <span id="timeCurrent">0:00</span>
+          <input id="seek" type="range" min="0" max="1000" value="0" disabled />
+          <span id="timeTotal">0:00</span>
+        </label>
+      </div>
+      <audio id="audio" preload="metadata"></audio>
+      <canvas id="decodeCanvas" width="1920" height="1080" hidden></canvas>
+    </section>
+
+    <section class="card list-card">
+      <div class="list-head">
+        <h3>Library</h3>
+        <input id="search" type="search" placeholder="Search title or artist" />
+      </div>
+      <div id="status" class="status"></div>
+      <div id="trackList" class="track-list"></div>
+    </section>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

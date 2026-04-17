@@ -1,0 +1,38 @@
+{
+  "id": "the-beatles-baby-you-re-a-rich-man-1776404552089",
+  "title": "Baby You’re a Rich Man",
+  "artist": "The Beatles",
+  "album": "All You Need Is Love",
+  "albumArtist": "The Beatles",
+  "genre": [],
+  "year": 1967,
+  "trackNumber": null,
+  "durationSeconds": 181,
+  "imageFile": "library/images/the-beatles-baby-you-re-a-rich-man-1776404552089.png",
+  "mp3File": "library/mp3/the-beatles-baby-you-re-a-rich-man-1776404552089.mp3",
+  "stegFile": "library/stegmp3/the-beatles-baby-you-re-a-rich-man-1776404552089.steg.png",
+  "addedAt": "2026-04-17T05:42:32.126Z",
+  "favorite": false,
+  "tags": [
+    "rock",
+    "soundtrack",
+    "psychedelic rock",
+    "psychedelic",
+    "beatles",
+    "british psychedelia",
+    "am pop",
+    "pop/rock",
+    "early pop/rock",
+    "mid to late 60's"
+  ],
+  "hash": {
+    "mp3Sha256": "c448c4e993a1fe53670a62faa851441c2fd1831d8fd099a2890118c06232b890",
+    "stegSha256": "4b001855e53b3f626bf8188b5384772e0c860d72a74f550aef16c6fa2b0a2891",
+    "imageSha256": "a48d3d65a32e232fb4eb60a43d2026425a898edcc2b7c3186c24d30669ea4abb"
+  },
+  "source": {
+    "metadataProvider": "manual+id3",
+    "imageProvider": "user-upload",
+    "coverImageSource": "Gemini_Generated_Image_6sa3936sa3936sa3.png"
+  }
+}

@@ -1,0 +1,253 @@
+[
+  {
+    "id": "the-beatles-we-can-work-it-out-1776405203773",
+    "title": "We Can Work It Out",
+    "artist": "The Beatles",
+    "album": "Yesterday… and Today",
+    "albumArtist": "The Beatles",
+    "genre": [],
+    "year": 1966,
+    "trackNumber": null,
+    "durationSeconds": 137,
+    "imageFile": "library/images/the-beatles-we-can-work-it-out-1776405203773.png",
+    "mp3File": "library/mp3/the-beatles-we-can-work-it-out-1776405203773.mp3",
+    "stegFile": "library/stegmp3/the-beatles-we-can-work-it-out-1776405203773.steg.png",
+    "addedAt": "2026-04-17T05:53:23.810Z",
+    "favorite": false,
+    "tags": [],
+    "hash": {
+      "mp3Sha256": "fe66285dc82324f6b8d3d5ac3ccc59a45b2dbf8496db820b580d520198520a42",
+      "stegSha256": "db3713eed87fe8729713462d296071095bf16ecae540687cba56be2fc2f74445",
+      "imageSha256": "e39ccb0f884b391b78eb257786a28effbb67c012b537f941cdf0799efce46c1a"
+    },
+    "source": {
+      "metadataProvider": "manual+id3",
+      "imageProvider": "user-upload",
+      "coverImageSource": "Gemini_Generated_Image_cm3lpicm3lpicm3l.png"
+    }
+  },
+  {
+    "id": "the-beatles-baby-you-re-a-rich-man-1776404552089",
+    "title": "Baby You’re a Rich Man",
+    "artist": "The Beatles",
+    "album": "All You Need Is Love",
+    "albumArtist": "The Beatles",
+    "genre": [],
+    "year": 1967,
+    "trackNumber": null,
+    "durationSeconds": 181,
+    "imageFile": "library/images/the-beatles-baby-you-re-a-rich-man-1776404552089.png",
+    "mp3File": "library/mp3/the-beatles-baby-you-re-a-rich-man-1776404552089.mp3",
+    "stegFile": "library/stegmp3/the-beatles-baby-you-re-a-rich-man-1776404552089.steg.png",
+    "addedAt": "2026-04-17T05:42:32.126Z",
+    "favorite": false,
+    "tags": [
+      "rock",
+      "soundtrack",
+      "psychedelic rock",
+      "psychedelic",
+      "beatles",
+      "british psychedelia",
+      "am pop",
+      "pop/rock",
+      "early pop/rock",
+      "mid to late 60's"
+    ],
+    "hash": {
+      "mp3Sha256": "c448c4e993a1fe53670a62faa851441c2fd1831d8fd099a2890118c06232b890",
+      "stegSha256": "4b001855e53b3f626bf8188b5384772e0c860d72a74f550aef16c6fa2b0a2891",
+      "imageSha256": "a48d3d65a32e232fb4eb60a43d2026425a898edcc2b7c3186c24d30669ea4abb"
+    },
+    "source": {
+      "metadataProvider": "manual+id3",
+      "imageProvider": "user-upload",
+      "coverImageSource": "Gemini_Generated_Image_6sa3936sa3936sa3.png"
+    }
+  },
+  {
+    "id": "track-wind-is-in-from-africa",
+    "title": "Wind Is In From Africa",
+    "artist": "StegSong Demo",
+    "album": "Imported Gallery",
+    "albumArtist": "StegSong Demo",
+    "genre": [
+      "Demo",
+      "Ambient"
+    ],
+    "year": 2026,
+    "trackNumber": 6,
+    "durationSeconds": 0,
+    "imageFile": "library/images/track-wind-is-in-from-africa.png",
+    "mp3File": "library/mp3/track-wind-is-in-from-africa.mp3",
+    "stegFile": "library/stegmp3/wind is in from africa.steg.png",
+    "addedAt": "2026-04-16T21:05:00Z",
+    "favorite": false,
+    "tags": [
+      "demo",
+      "gallery"
+    ],
+    "hash": {
+      "mp3Sha256": "",
+      "stegSha256": ""
+    },
+    "source": {
+      "metadataProvider": "seeded",
+      "imageProvider": "existing-gallery"
+    }
+  },
+  {
+    "id": "track-special",
+    "title": "Special",
+    "artist": "StegSong Demo",
+    "album": "Imported Gallery",
+    "albumArtist": "StegSong Demo",
+    "genre": [
+      "Demo",
+      "Electronic"
+    ],
+    "year": 2026,
+    "trackNumber": 5,
+    "durationSeconds": 0,
+    "imageFile": "library/images/track-special.png",
+    "mp3File": "library/mp3/track-special.mp3",
+    "stegFile": "library/stegmp3/special.steg.png",
+    "addedAt": "2026-04-16T21:04:00Z",
+    "favorite": false,
+    "tags": [
+      "demo",
+      "gallery"
+    ],
+    "hash": {
+      "mp3Sha256": "",
+      "stegSha256": ""
+    },
+    "source": {
+      "metadataProvider": "seeded",
+      "imageProvider": "existing-gallery"
+    }
+  },
+  {
+    "id": "track-she-moves",
+    "title": "She Moves",
+    "artist": "StegSong Demo",
+    "album": "Imported Gallery",
+    "albumArtist": "StegSong Demo",
+    "genre": [
+      "Demo",
+      "Pop"
+    ],
+    "year": 2026,
+    "trackNumber": 4,
+    "durationSeconds": 0,
+    "imageFile": "library/images/track-she-moves.png",
+    "mp3File": "library/mp3/track-she-moves.mp3",
+    "stegFile": "library/stegmp3/she moves.steg.png",
+    "addedAt": "2026-04-16T21:03:00Z",
+    "favorite": false,
+    "tags": [
+      "demo",
+      "gallery"
+    ],
+    "hash": {
+      "mp3Sha256": "",
+      "stegSha256": ""
+    },
+    "source": {
+      "metadataProvider": "seeded",
+      "imageProvider": "existing-gallery"
+    }
+  },
+  {
+    "id": "track-rain-in-canada",
+    "title": "Rain In Canada",
+    "artist": "StegSong Demo",
+    "album": "Imported Gallery",
+    "albumArtist": "StegSong Demo",
+    "genre": [
+      "Demo",
+      "Ambient"
+    ],
+    "year": 2026,
+    "trackNumber": 3,
+    "durationSeconds": 0,
+    "imageFile": "library/images/track-rain-in-canada.png",
+    "mp3File": "library/mp3/track-rain-in-canada.mp3",
+    "stegFile": "library/stegmp3/rain in canada.steg.png",
+    "addedAt": "2026-04-16T21:02:00Z",
+    "favorite": false,
+    "tags": [
+      "demo",
+      "gallery"
+    ],
+    "hash": {
+      "mp3Sha256": "",
+      "stegSha256": ""
+    },
+    "source": {
+      "metadataProvider": "seeded",
+      "imageProvider": "existing-gallery"
+    }
+  },
+  {
+    "id": "track-celtic",
+    "title": "Celtic",
+    "artist": "StegSong Demo",
+    "album": "Imported Gallery",
+    "albumArtist": "StegSong Demo",
+    "genre": [
+      "Demo",
+      "World"
+    ],
+    "year": 2026,
+    "trackNumber": 2,
+    "durationSeconds": 0,
+    "imageFile": "library/images/track-celtic.png",
+    "mp3File": "library/mp3/track-celtic.mp3",
+    "stegFile": "library/stegmp3/celtic.steg.png",
+    "addedAt": "2026-04-16T21:01:00Z",
+    "favorite": false,
+    "tags": [
+      "demo",
+      "gallery"
+    ],
+    "hash": {
+      "mp3Sha256": "",
+      "stegSha256": ""
+    },
+    "source": {
+      "metadataProvider": "seeded",
+      "imageProvider": "existing-gallery"
+    }
+  },
+  {
+    "id": "track-57-chevy",
+    "title": "57 Chevy",
+    "artist": "StegSong Demo",
+    "album": "Imported Gallery",
+    "albumArtist": "StegSong Demo",
+    "genre": [
+      "Demo",
+      "Rock"
+    ],
+    "year": 2026,
+    "trackNumber": 1,
+    "durationSeconds": 0,
+    "imageFile": "library/images/track-57-chevy.png",
+    "mp3File": "library/mp3/track-57-chevy.mp3",
+    "stegFile": "library/stegmp3/57 chevy.steg.png",
+    "addedAt": "2026-04-16T21:00:00Z",
+    "favorite": false,
+    "tags": [
+      "demo",
+      "gallery"
+    ],
+    "hash": {
+      "mp3Sha256": "",
+      "stegSha256": ""
+    },
+    "source": {
+      "metadataProvider": "seeded",
+      "imageProvider": "existing-gallery"
+    }
+  }
+]

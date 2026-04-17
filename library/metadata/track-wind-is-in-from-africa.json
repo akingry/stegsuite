@@ -1,0 +1,31 @@
+﻿{
+    "id":  "track-wind-is-in-from-africa",
+    "title":  "Wind Is In From Africa",
+    "artist":  "StegSong Demo",
+    "album":  "Imported Gallery",
+    "albumArtist":  "StegSong Demo",
+    "genre":  [
+                  "Demo",
+                  "Ambient"
+              ],
+    "year":  2026,
+    "trackNumber":  6,
+    "durationSeconds":  0,
+    "imageFile":  "library/images/track-wind-is-in-from-africa.png",
+    "mp3File":  "library/mp3/track-wind-is-in-from-africa.mp3",
+    "stegFile":  "library/stegmp3/wind is in from africa.steg.png",
+    "addedAt":  "2026-04-16T21:05:00Z",
+    "favorite":  false,
+    "tags":  [
+                 "demo",
+                 "gallery"
+             ],
+    "hash":  {
+                 "mp3Sha256":  "",
+                 "stegSha256":  ""
+             },
+    "source":  {
+                   "metadataProvider":  "seeded",
+                   "imageProvider":  "existing-gallery"
+               }
+}
