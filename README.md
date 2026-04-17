@@ -65,6 +65,16 @@ This public repo does **not** include:
 - source MP3 files from `library/mp3/`
 - source image files from `library/images/`
 
+## Screenshots
+
+### Desktop app
+
+![StegSuite desktop app](docs/images/stegsuite-app.png)
+
+### Remote player
+
+![StegSuite remote player](docs/images/stegsuite-remote-player.png)
+
 ## Quick start
 
 ### Desktop app
