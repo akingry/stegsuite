@@ -172,6 +172,34 @@ async function handleDelete(payload) {
   return { ok: true, id, deletedStegFile, trackCount: tracks.length };
 }
 
+async function handleUpdateMetadata(payload) {
+  const { id, updates } = payload || {};
+  if (!id || typeof id !== 'string') throw new Error('Missing track id.');
+  if (!updates || typeof updates !== 'object') throw new Error('Missing metadata updates.');
+
+  await ensureLibraryDirs();
+
+  const metadataPath = path.join(metadataDir, `${id}.json`);
+  const existing = await readJsonFile(metadataPath, null);
+  if (!existing) throw new Error('Track metadata not found.');
+
+  const nextRecord = {
+    ...existing,
+    ...updates,
+    id,
+    updatedAt: new Date().toISOString(),
+  };
+
+  await writeFile(metadataPath, `${JSON.stringify(nextRecord, null, 2)}\n`, 'utf8');
+  const tracks = await rebuildIndex();
+  return {
+    ok: true,
+    id,
+    track: publicTrack(nextRecord),
+    trackCount: tracks.length,
+  };
+}
+
 async function streamFile(res, filePath, req, extraHeaders = {}) {
   const fileStat = await stat(filePath).catch(() => null);
   if (!fileStat?.isFile()) {
@@ -340,7 +368,7 @@ const server = createServer(async (req, res) => {
       return;
     }
 
-    if (req.method !== 'POST' || !['/save-track', '/delete-track'].includes(req.url)) {
+    if (req.method !== 'POST' || !['/save-track', '/delete-track', '/update-track-metadata'].includes(req.url)) {
       sendJson(res, 404, { ok: false, error: 'Not found.' }, origin);
       return;
     }
@@ -349,7 +377,10 @@ const server = createServer(async (req, res) => {
     for await (const chunk of req) chunks.push(chunk);
     const rawBody = Buffer.concat(chunks).toString('utf8');
     const payload = rawBody ? JSON.parse(rawBody) : {};
-    const result = req.url === '/save-track' ? await handleSave(payload) : await handleDelete(payload);
+    let result;
+    if (req.url === '/save-track') result = await handleSave(payload);
+    else if (req.url === '/delete-track') result = await handleDelete(payload);
+    else result = await handleUpdateMetadata(payload);
     sendJson(res, 200, result, origin);
   } catch (error) {
     sendJson(res, 400, { ok: false, error: error.message || String(error) }, origin);

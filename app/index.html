@@ -20,7 +20,87 @@
 
   <main class="layout">
     <aside class="sidebar">
-      <section class="panel sticky">
+      <section class="panel">
+        <div class="section-head">
+          <h2>Add or edit track</h2>
+        </div>
+        <form id="importForm" class="stack">
+          <section class="stack flow-section">
+            <h3>1. Choose the MP3</h3>
+            <label>MP3 file<input id="mp3Input" type="file" accept="audio/mpeg,.mp3" required /></label>
+          </section>
+
+          <section class="stack flow-section">
+            <div class="section-head compact-head">
+              <h3>2. Song metadata</h3>
+              <button type="button" id="saveMetadataBtn" class="secondary small-btn">Save metadata changes</button>
+            </div>
+            <div class="row metadata-actions-left">
+              <button type="button" id="autofillBtn" class="secondary small-btn">Use MP3 metadata</button>
+              <button type="button" id="lookupMetadataBtn" class="secondary small-btn">Search MusicBrainz</button>
+            </div>
+            <div class="split">
+              <label>Title<input id="titleInput" type="text" /></label>
+              <label>Artist<input id="artistInput" type="text" /></label>
+            </div>
+            <div class="split">
+              <label>Album<input id="albumInput" type="text" /></label>
+              <label>Album artist<input id="albumArtistInput" type="text" /></label>
+            </div>
+            <div class="split thirds">
+              <label>Genre<input id="genreInput" type="text" placeholder="Ambient, Electronic" /></label>
+              <label>Year<input id="yearInput" type="number" min="0" step="1" /></label>
+              <label>Track #<input id="trackInput" type="number" min="0" step="1" /></label>
+            </div>
+            <label>Tags / moods<input id="tagsInput" type="text" placeholder="night, dreamy" /></label>
+            <div class="stack metadata-lookup-panel">
+              <div id="lookupResults" class="lookup-results"></div>
+            </div>
+          </section>
+
+          <details class="prompt-details">
+            <summary>3. Optional AI artwork prompt</summary>
+            <div class="stack prompt-panel">
+              <div class="section-head compact-head">
+                <h3>AI artwork prompt</h3>
+                <div class="row tight-row">
+                  <button type="button" id="copyPromptBtn" class="secondary small-btn">Copy prompt</button>
+                  <span id="copyPromptNotice" class="copy-notice" aria-live="polite"></span>
+                </div>
+              </div>
+              <p class="small">Generate a reusable 1920 × 1080 artwork prompt from the song metadata. Use the prompt in any AI image tool you like, then import the finished image below.</p>
+              <textarea id="artPromptOutput" class="prompt-output" rows="10" readonly placeholder="Your artwork prompt will appear here."></textarea>
+            </div>
+          </details>
+
+          <section class="stack flow-section">
+            <h3>4. Choose the image</h3>
+            <label>Image file<input id="imageInput" type="file" accept="image/png,image/bmp,image/webp,image/jpeg,image/jpg,image/gif,image/tiff" required /></label>
+            <div class="preview-card">
+              <div class="preview-title">1920×1080 cropped preview</div>
+              <canvas id="importPreview" width="1920" height="1080" title="Click to view the cropped fullscreen image"></canvas>
+              <div class="crop-controls">
+                <label>Horizontal crop
+                  <input id="cropXSlider" type="range" min="0" max="1000" value="500" />
+                </label>
+                <label>Vertical crop
+                  <input id="cropYSlider" type="range" min="0" max="1000" value="500" />
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <div class="row">
+            <button type="submit" id="generateBtn" disabled>Encode and save</button>
+            <button type="button" id="resetImportBtn" class="secondary">Reset</button>
+          </div>
+        </form>
+        <div id="importStatus" class="status hidden"></div>
+      </section>
+    </aside>
+
+    <section class="content">
+      <section class="panel">
         <h2>Library</h2>
         <label>Search<input id="searchInput" type="search" placeholder="Title, artist, album" /></label>
         <div class="split">
@@ -49,59 +129,6 @@
         <div class="stats" id="libraryStats"></div>
       </section>
 
-      <section class="panel">
-        <div class="section-head">
-          <h2>Add new file</h2>
-          <button id="autofillBtn" class="secondary small-btn">Use MP3 metadata</button>
-        </div>
-        <form id="importForm" class="stack">
-          <label>MP3 file<input id="mp3Input" type="file" accept="audio/mpeg,.mp3" required /></label>
-          <label>Image file<input id="imageInput" type="file" accept="image/png,image/bmp,image/webp,image/jpeg,image/jpg,image/gif,image/tiff" required /></label>
-          <div class="split">
-            <label>Title<input id="titleInput" type="text" /></label>
-            <label>Artist<input id="artistInput" type="text" /></label>
-          </div>
-          <div class="split">
-            <label>Album<input id="albumInput" type="text" /></label>
-            <label>Album artist<input id="albumArtistInput" type="text" /></label>
-          </div>
-          <div class="split thirds">
-            <label>Genre<input id="genreInput" type="text" placeholder="Ambient, Electronic" /></label>
-            <label>Year<input id="yearInput" type="number" min="0" step="1" /></label>
-            <label>Track #<input id="trackInput" type="number" min="0" step="1" /></label>
-          </div>
-          <label>Tags / moods<input id="tagsInput" type="text" placeholder="night, dreamy" /></label>
-          <details>
-            <summary>Online metadata hooks</summary>
-            <div class="stack details-body">
-              <div class="row">
-                <button type="button" id="lookupMetadataBtn" class="secondary">Search MusicBrainz</button>
-              </div>
-              <div id="lookupResults" class="lookup-results"></div>
-            </div>
-          </details>
-          <div class="preview-card">
-            <div class="preview-title">1920×1080 cropped preview</div>
-            <canvas id="importPreview" width="1920" height="1080" title="Click to view the cropped fullscreen image"></canvas>
-            <div class="crop-controls">
-              <label>Horizontal crop
-                <input id="cropXSlider" type="range" min="0" max="1000" value="500" />
-              </label>
-              <label>Vertical crop
-                <input id="cropYSlider" type="range" min="0" max="1000" value="500" />
-              </label>
-            </div>
-          </div>
-          <div class="row">
-            <button type="submit" id="generateBtn" disabled>Generate and save</button>
-            <button type="button" id="resetImportBtn" class="secondary">Reset</button>
-          </div>
-        </form>
-        <div id="importStatus" class="status hidden"></div>
-      </section>
-    </aside>
-
-    <section class="content">
       <section class="panel">
         <div class="section-head">
           <h2>Gallery</h2>

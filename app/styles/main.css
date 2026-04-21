@@ -20,7 +20,7 @@ body {
   background: var(--bg);
   color: var(--text);
 }
-button, input, select, canvas, audio { font: inherit; }
+button, input, select, textarea, canvas, audio { font: inherit; }
 button {
   border: 0;
   border-radius: 12px;
@@ -80,6 +80,14 @@ label { display: block; font-size: 12px; color: var(--muted); }
   padding: 16px;
 }
 .sticky { position: sticky; top: 18px; }
+.flow-section {
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.flow-section:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
 .section-head, .player-meta, .row, .split {
   display: flex;
   gap: 10px;
@@ -88,6 +96,64 @@ label { display: block; font-size: 12px; color: var(--muted); }
 }
 .section-head { margin-bottom: 12px; }
 .section-head h2, .panel h2 { margin: 0; font-size: 16px; }
+.compact-head { margin-bottom: 0; }
+.lookup-row {
+  justify-content: flex-start;
+}
+.metadata-actions-left {
+  justify-content: flex-start;
+}
+.tight-row {
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.copy-notice {
+  min-width: 72px;
+  font-size: 12px;
+  color: var(--ok);
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.copy-notice.visible {
+  opacity: 1;
+}
+.metadata-lookup-panel {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.02);
+}
+.prompt-details {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,.02);
+}
+.prompt-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+.prompt-panel {
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel-3);
+}
+.prompt-output {
+  width: 100%;
+  min-height: 220px;
+  resize: vertical;
+  margin-top: 0;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #0a101b;
+  color: var(--text);
+  line-height: 1.45;
+}
 .stack { display: grid; gap: 12px; }
 .split > * { flex: 1; }
 .thirds > * { min-width: 0; }
