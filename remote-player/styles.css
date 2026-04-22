@@ -61,6 +61,26 @@ input {
   padding: 14px;
   box-shadow: 0 18px 48px rgba(0, 0, 0, .22);
 }
+.decode-notice {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(138, 180, 255, .4);
+  background: rgba(138, 180, 255, .14);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
+}
+.decode-notice.hidden {
+  display: none;
+}
+.decode-notice strong {
+  color: var(--text);
+  font-size: 14px;
+}
+.decode-notice span {
+  color: var(--muted);
+  font-size: 13px;
+}
 .now-playing { display: grid; gap: 14px; }
 .artwork {
   width: 100%;

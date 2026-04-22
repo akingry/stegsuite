@@ -10,6 +10,9 @@ const state = {
 
 const els = {
   serverLabel: document.getElementById('serverLabel'),
+  decodeNotice: document.getElementById('decodeNotice'),
+  decodeNoticeTitle: document.getElementById('decodeNoticeTitle'),
+  decodeNoticeText: document.getElementById('decodeNoticeText'),
   artwork: document.getElementById('artwork'),
   title: document.getElementById('title'),
   subtitle: document.getElementById('subtitle'),
@@ -28,6 +31,13 @@ const els = {
 
 function setStatus(message) {
   els.status.textContent = message || '';
+}
+
+function setDecodeNotice(title, message, visible = true) {
+  if (!els.decodeNotice) return;
+  els.decodeNotice.classList.toggle('hidden', !visible);
+  if (els.decodeNoticeTitle) els.decodeNoticeTitle.textContent = title || '';
+  if (els.decodeNoticeText) els.decodeNoticeText.textContent = message || '';
 }
 
 function renderShuffleButton() {
@@ -106,6 +116,7 @@ async function loadTrack(trackId) {
   els.playPauseBtn.disabled = true;
   els.seek.disabled = true;
   setStatus(`Decoding ${track.title || track.id}...`);
+  setDecodeNotice('Decoding track', `Preparing ${track.title || track.id}...`, true);
 
   try {
     const response = await fetch(track.stegUrl, { cache: 'no-store' });
@@ -120,12 +131,16 @@ async function loadTrack(trackId) {
     els.seek.disabled = false;
     await els.audio.play().catch(() => {});
     setStatus(`Decoded ${formatTime(track.durationSeconds || 0)} from steg PNG.`);
+    setDecodeNotice('Track ready', `${track.title || track.id} decoded.`, true);
+    setTimeout(() => setDecodeNotice('', '', false), 1200);
   } catch (error) {
     const message = error?.message || String(error);
     if (/Web Crypto SHA-256/i.test(message)) {
       setStatus('This phone browser cannot decode these tracks here yet. Try Chrome or Safari, or use HTTPS/Tailscale for a secure context.');
+      setDecodeNotice('Decode failed', 'Browser security blocked decoding here.', true);
     } else {
       setStatus(message);
+      setDecodeNotice('Decode failed', message, true);
     }
   }
 }

@@ -1,13 +1,15 @@
 const W = 1920;
 const H = 1080;
-const LSB_BITS = 4;
+const MATRIX_K = 5;
+const MATRIX_PLANE = 4;
 const CHANNELS = 3;
-const LSB_CAPACITY_BYTES = Math.floor((W * H * CHANNELS * LSB_BITS) / 8);
 const te = new TextEncoder();
 const td = new TextDecoder();
 const MAGIC = te.encode('STEGMP3\0');
 const VERSION = 1;
 const FIXED_HEADER_LEN = 8 + 1 + 1 + 2 + 4 + 4 + 4 + 32 + 2;
+const MATRIX5_CAPACITY_BITS = capacityBitsForMode(W, H, MATRIX_K, MATRIX_PLANE);
+const LSB_CAPACITY_BYTES = Math.floor(MATRIX5_CAPACITY_BITS / 8);
 const webCrypto = globalThis.crypto?.subtle || null;
 const SHA256_K = new Uint32Array([
   0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
@@ -19,13 +21,10 @@ const SHA256_K = new Uint32Array([
   0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
   0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 ]);
+const H_ROWS = [0b1010101, 0b1100110, 0b1111000];
 
-function u16be(n) {
-  return new Uint8Array([(n >>> 8) & 0xff, n & 0xff]);
-}
-function u32be(n) {
-  return new Uint8Array([(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff]);
-}
+function u16be(n) { return new Uint8Array([(n >>> 8) & 0xff, n & 0xff]); }
+function u32be(n) { return new Uint8Array([(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff]); }
 function readU16be(buf, off) { return (buf[off] << 8) | buf[off + 1]; }
 function readU32be(buf, off) { return (buf[off] * 2 ** 24) + (buf[off + 1] << 16) + (buf[off + 2] << 8) + buf[off + 3]; }
 function concatBytes(...arrs) {
@@ -141,6 +140,69 @@ function parseCsvList(value) {
     .map((item) => item.trim())
     .filter(Boolean);
 }
+function capacityBitsForMode(width, height, k, matrixPlane) {
+  const carriers = width * height * CHANNELS;
+  const plainBits = carriers * (k - 1);
+  const matrixBits = Math.floor(carriers / 7) * 3;
+  return plainBits + matrixBits;
+}
+function enumerateCarriers() {
+  const coords = [];
+  for (let y = 0; y < H; y += 1) {
+    for (let x = 0; x < W; x += 1) {
+      coords.push([x, y, 0]);
+      coords.push([x, y, 1]);
+      coords.push([x, y, 2]);
+    }
+  }
+  return coords;
+}
+function bytesToBits(bytes) {
+  const bits = [];
+  for (const b of bytes) {
+    for (let shift = 7; shift >= 0; shift -= 1) bits.push((b >> shift) & 1);
+  }
+  return bits;
+}
+function bitsToBytes(bits) {
+  const out = new Uint8Array(Math.ceil(bits.length / 8));
+  let byteIndex = 0;
+  let bitOffset = 0;
+  for (const bit of bits) {
+    out[byteIndex] |= bit << (7 - bitOffset);
+    bitOffset += 1;
+    if (bitOffset === 8) {
+      bitOffset = 0;
+      byteIndex += 1;
+    }
+  }
+  return out;
+}
+function popcount(n) {
+  let c = 0;
+  let x = n >>> 0;
+  while (x) {
+    x &= x - 1;
+    c += 1;
+  }
+  return c;
+}
+function syndrome7(bits7) {
+  let s = 0;
+  for (let i = 0; i < H_ROWS.length; i += 1) {
+    s |= ((popcount(bits7 & H_ROWS[i]) & 1) << i);
+  }
+  return s;
+}
+function embedHammingGroup(planeBits7, payload3) {
+  const s = syndrome7(planeBits7);
+  const diff = s ^ payload3;
+  if (diff === 0) return planeBits7;
+  return planeBits7 ^ (1 << (diff - 1));
+}
+function extractHammingGroup(planeBits7) {
+  return syndrome7(planeBits7);
+}
 function findPngEndOffset(pngBytes) {
   const sig = [137, 80, 78, 71, 13, 10, 26, 10];
   for (let i = 0; i < 8; i += 1) {
@@ -157,102 +219,138 @@ function findPngEndOffset(pngBytes) {
   }
   throw new Error('Could not find IEND chunk.');
 }
-function embedLSBIntoImageData(imageData, payloadBytes) {
-  const groupsPerByte = 8 / LSB_BITS;
-  const neededGroups = payloadBytes.length * groupsPerByte;
-  if (neededGroups > W * H * 3) throw new Error('Payload too large for cover image capacity.');
-  const data = imageData.data;
-  const clearMask = 0xff ^ ((1 << LSB_BITS) - 1);
-  let byteIndex = 0;
-  let groupIndex = 0;
-  let written = 0;
-  function nextGroup() {
-    const shift = 8 - LSB_BITS - (groupIndex * LSB_BITS);
-    const value = (payloadBytes[byteIndex] >>> shift) & ((1 << LSB_BITS) - 1);
-    groupIndex += 1;
-    if (groupIndex === groupsPerByte) {
-      groupIndex = 0;
-      byteIndex += 1;
-    }
-    return value;
-  }
-  for (let pixel = 0; pixel < W * H && written < neededGroups; pixel += 1) {
-    const base = pixel * 4;
-    for (let c = 0; c < 3 && written < neededGroups; c += 1) {
-      data[base + c] = (data[base + c] & clearMask) | nextGroup();
-      written += 1;
-    }
-  }
-  return imageData;
-}
-function extractLSBFromImageData(imageData, nBytes) {
-  const out = new Uint8Array(nBytes);
-  const data = imageData.data;
-  const groupsPerByte = 8 / LSB_BITS;
-  const neededGroups = nBytes * groupsPerByte;
-  const mask = (1 << LSB_BITS) - 1;
-  let groupCount = 0;
-  let currentByte = 0;
-  let groupIndex = 0;
-  function pushGroup(value) {
-    const shift = 8 - LSB_BITS - (groupIndex * LSB_BITS);
-    currentByte |= (value & mask) << shift;
-    groupIndex += 1;
-    if (groupIndex === groupsPerByte) {
-      out[(groupCount / groupsPerByte) | 0] = currentByte;
-      currentByte = 0;
-      groupIndex = 0;
-    }
-  }
-  for (let pixel = 0; pixel < W * H && groupCount < neededGroups; pixel += 1) {
-    const base = pixel * 4;
-    for (let c = 0; c < 3 && groupCount < neededGroups; c += 1) {
-      pushGroup(data[base + c] & mask);
-      groupCount += 1;
-    }
-  }
-  return out;
+function fitImageToCanvas(image, canvas, mode = 'contain') {
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+  const scale = mode === 'cover' ? Math.max(W / image.width, H / image.height) : Math.min(W / image.width, H / image.height);
+  const drawW = Math.round(image.width * scale);
+  const drawH = Math.round(image.height * scale);
+  const dx = Math.floor((W - drawW) / 2);
+  const dy = Math.floor((H - drawH) / 2);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(image, dx, dy, drawW, drawH);
 }
 async function drawCoverToCanvas(file, canvas, mode = 'contain') {
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
   const bmp = await createImageBitmap(file);
   try {
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, W, H);
-    const scale = mode === 'cover' ? Math.max(W / bmp.width, H / bmp.height) : Math.min(W / bmp.width, H / bmp.height);
-    const drawW = Math.round(bmp.width * scale);
-    const drawH = Math.round(bmp.height * scale);
-    const dx = Math.floor((W - drawW) / 2);
-    const dy = Math.floor((H - drawH) / 2);
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(bmp, dx, dy, drawW, drawH);
+    fitImageToCanvas(bmp, canvas, mode);
   } finally {
     bmp.close?.();
   }
 }
-async function encodeSteg({ coverCanvas, mp3Bytes, mp3Name }) {
-  const ctx = coverCanvas.getContext('2d', { willReadFrequently: true });
-  const imageData = ctx.getImageData(0, 0, W, H);
+async function buildPayload(mp3Bytes, mp3Name, capacityBytes) {
   const nameBytes = te.encode(mp3Name || 'hidden.mp3');
   const mp3Hash = await sha256(mp3Bytes);
   const headerLen = FIXED_HEADER_LEN + nameBytes.length;
-  const lsbMp3Len = Math.min(mp3Bytes.length, LSB_CAPACITY_BYTES - headerLen);
+  const lsbMp3Len = Math.min(mp3Bytes.length, Math.max(0, capacityBytes - headerLen));
   const trailLen = mp3Bytes.length - lsbMp3Len;
-  const header = concatBytes(MAGIC, new Uint8Array([VERSION]), new Uint8Array([0]), u16be(headerLen), u32be(mp3Bytes.length >>> 0), u32be(lsbMp3Len >>> 0), u32be(trailLen >>> 0), mp3Hash, u16be(nameBytes.length), nameBytes);
-  const payload = concatBytes(header, mp3Bytes.slice(0, lsbMp3Len));
-  embedLSBIntoImageData(imageData, payload);
+  const header = concatBytes(
+    MAGIC,
+    new Uint8Array([VERSION]),
+    new Uint8Array([0]),
+    u16be(headerLen),
+    u32be(mp3Bytes.length >>> 0),
+    u32be(lsbMp3Len >>> 0),
+    u32be(trailLen >>> 0),
+    mp3Hash,
+    u16be(nameBytes.length),
+    nameBytes,
+  );
+  return {
+    payload: concatBytes(header, mp3Bytes.slice(0, lsbMp3Len)),
+    trailing: mp3Bytes.slice(lsbMp3Len),
+    lsbMp3Len,
+    trailLen,
+    mp3Hash,
+  };
+}
+function embedPlanesIntoImageData(imageData, payloadBytes, k, matrixPlane) {
+  const data = imageData.data;
+  const coords = enumerateCarriers();
+  const values = new Uint8Array(coords.length);
+  for (let i = 0; i < coords.length; i += 1) {
+    const [x, y, ch] = coords[i];
+    values[i] = data[(y * W * 4) + (x * 4) + ch];
+  }
+  const bits = bytesToBits(payloadBytes);
+  let bitCursor = 0;
+  for (let plane = 0; plane < k; plane += 1) {
+    const maskSet = 1 << plane;
+    const maskClr = 0xFF ^ maskSet;
+    if (plane === matrixPlane) {
+      for (let i = 0; i + 7 <= values.length && bitCursor < bits.length; i += 7) {
+        let g = 0;
+        for (let j = 0; j < 7; j += 1) g |= (((values[i + j] >> plane) & 1) << j);
+        const take = Math.min(3, bits.length - bitCursor);
+        let m = 0;
+        for (let j = 0; j < take; j += 1) m |= bits[bitCursor + j] << j;
+        bitCursor += take;
+        const g2 = embedHammingGroup(g, m);
+        const diff = g ^ g2;
+        if (diff) {
+          for (let j = 0; j < 7; j += 1) {
+            if ((diff >> j) & 1) {
+              values[i + j] = (values[i + j] & maskClr) | ((((values[i + j] >> plane) & 1) ^ 1) << plane);
+              break;
+            }
+          }
+        }
+      }
+    } else {
+      for (let i = 0; i < values.length && bitCursor < bits.length; i += 1) {
+        values[i] = (values[i] & maskClr) | (bits[bitCursor] << plane);
+        bitCursor += 1;
+      }
+    }
+    if (bitCursor >= bits.length) break;
+  }
+  for (let i = 0; i < coords.length; i += 1) {
+    const [x, y, ch] = coords[i];
+    data[(y * W * 4) + (x * 4) + ch] = values[i];
+  }
+  return bitCursor;
+}
+function extractPlanesFromImageData(imageData, nBits, k, matrixPlane) {
+  const data = imageData.data;
+  const coords = enumerateCarriers();
+  const values = new Uint8Array(coords.length);
+  for (let i = 0; i < coords.length; i += 1) {
+    const [x, y, ch] = coords[i];
+    values[i] = data[(y * W * 4) + (x * 4) + ch];
+  }
+  const bits = [];
+  for (let plane = 0; plane < k && bits.length < nBits; plane += 1) {
+    if (plane === matrixPlane) {
+      for (let i = 0; i + 7 <= values.length && bits.length < nBits; i += 7) {
+        let g = 0;
+        for (let j = 0; j < 7; j += 1) g |= (((values[i + j] >> plane) & 1) << j);
+        const m = extractHammingGroup(g);
+        for (let j = 0; j < 3 && bits.length < nBits; j += 1) bits.push((m >> j) & 1);
+      }
+    } else {
+      for (let i = 0; i < values.length && bits.length < nBits; i += 1) bits.push((values[i] >> plane) & 1);
+    }
+  }
+  return bitsToBytes(bits);
+}
+async function encodeSteg({ coverCanvas, mp3Bytes, mp3Name }) {
+  const ctx = coverCanvas.getContext('2d', { willReadFrequently: true });
+  const imageData = ctx.getImageData(0, 0, W, H);
+  const payloadInfo = await buildPayload(mp3Bytes, mp3Name, LSB_CAPACITY_BYTES);
+  const writtenBits = embedPlanesIntoImageData(imageData, payloadInfo.payload, MATRIX_K, MATRIX_PLANE);
+  if (writtenBits < payloadInfo.payload.length * 8) throw new Error('Matrix-5 capacity was insufficient for payload.');
   ctx.putImageData(imageData, 0, 0);
   const pngBlob = await new Promise((resolve, reject) => coverCanvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Failed to encode PNG.')), 'image/png'));
   const pngBytes = new Uint8Array(await pngBlob.arrayBuffer());
-  const trailing = mp3Bytes.slice(lsbMp3Len);
   return {
-    stegBytes: trailing.length ? concatBytes(pngBytes, trailing) : pngBytes,
-    shaHex: hex(mp3Hash),
+    stegBytes: payloadInfo.trailing.length ? concatBytes(pngBytes, payloadInfo.trailing) : pngBytes,
+    shaHex: hex(payloadInfo.mp3Hash),
     mp3Len: mp3Bytes.length,
-    lsbMp3Len,
-    trailLen,
+    lsbMp3Len: payloadInfo.lsbMp3Len,
+    trailLen: payloadInfo.trailLen,
   };
 }
 async function decodeStegFromBytes(allBytes, canvas) {
@@ -270,18 +368,19 @@ async function decodeStegFromBytes(allBytes, canvas) {
     bitmap.close?.();
   }
   const imageData = ctx.getImageData(0, 0, W, H);
-  const minHdr = extractLSBFromImageData(imageData, FIXED_HEADER_LEN);
+  const minHdr = extractPlanesFromImageData(imageData, FIXED_HEADER_LEN * 8, MATRIX_K, MATRIX_PLANE).slice(0, FIXED_HEADER_LEN);
   for (let i = 0; i < 8; i += 1) if (minHdr[i] !== MAGIC[i]) throw new Error('Magic mismatch. Not a StegMP3 image.');
   const headerLen = readU16be(minHdr, 10);
-  const header = extractLSBFromImageData(imageData, headerLen);
+  const header = extractPlanesFromImageData(imageData, headerLen * 8, MATRIX_K, MATRIX_PLANE).slice(0, headerLen);
   const mp3Len = readU32be(header, 12);
   const lsbMp3Len = readU32be(header, 16);
   const trailLen = readU32be(header, 20);
   const storedSha = header.slice(24, 56);
   const nameLen = readU16be(header, 56);
   const name = td.decode(header.slice(FIXED_HEADER_LEN, FIXED_HEADER_LEN + nameLen)) || 'recovered.mp3';
-  const lsbAll = extractLSBFromImageData(imageData, headerLen + lsbMp3Len);
-  const audioBytes = concatBytes(lsbAll.slice(headerLen), trailing.slice(0, trailLen));
+  const segmentLen = headerLen + lsbMp3Len;
+  const segment = extractPlanesFromImageData(imageData, segmentLen * 8, MATRIX_K, MATRIX_PLANE).slice(0, segmentLen);
+  const audioBytes = concatBytes(segment.slice(headerLen), trailing.slice(0, trailLen));
   const gotSha = await sha256(audioBytes);
   if (hex(gotSha) !== hex(storedSha)) throw new Error('SHA-256 verification failed. The PNG was modified or corrupted.');
   return { pngBytes: pngOnly, audioBytes, mp3Len, lsbMp3Len, trailLen, shaHex: hex(storedSha), name };
